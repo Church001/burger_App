@@ -34,7 +34,7 @@ class BurgerBuilder extends Component {
         console.log(this.props);
         axios.get( 'https://my-react-001.firebaseio.com/ingredients.json')
             .then( response => {
-                this.setState( { ingredients: response.data } );
+                this.setState( { ingredients: response.data } ); 
             } )
             .catch( error => {
                 this.setState( { error: true } );
