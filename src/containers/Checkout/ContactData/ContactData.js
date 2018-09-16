@@ -41,7 +41,9 @@ class ContactData extends Component {
                  },
                  value:'' ,
                  validation: {
-                    required:true
+                    required:true,
+                    minLength: 5,
+                    maxLength: 5
                   },
                   valid: false
             },
@@ -83,16 +85,6 @@ class ContactData extends Component {
         loading: false
     }
 
-    checkValidity (value, rules){
-        let isValid = false;
-
-        if(rules.required) {
-            isValid = value.trim() !== '';
-        }
-
-        return isValid;
-    }
-
     orderHandler = ( event ) => {
         event.preventDefault();
         this.setState( { loading: true } );
@@ -119,6 +111,24 @@ class ContactData extends Component {
 
     }
 
+     checkValidity (value, rules){
+        let isValid = true;
+
+        if(rules.required) {
+            isValid = value.trim() !== '' && isValid;
+        }
+
+        if(rules.minLength){
+            isValid = value.length >= rules.minLength && isValid;
+        }
+
+        if(rules.maxLength){
+            isValid = value.length <= rules.maxLength && isValid;
+        }
+
+        return isValid;
+    }
+
     inputChangeHandler = (event, inputIdentifier) => {
         const updatedOrderFormState = {
             ...this.state.orderForm
@@ -129,7 +139,11 @@ class ContactData extends Component {
         };
 
         updatedFormElement.value = event.target.value;
+        updatedFormElement.valid = this.checkValidity(updatedFormElement.value, updatedFormElement.validation)
         updatedOrderFormState[inputIdentifier] = updatedFormElement;
+        console.log(updatedFormElement);
+
+
 
         this.setState({orderForm: updatedOrderFormState});
     }
@@ -149,8 +163,10 @@ class ContactData extends Component {
                 {formElementsArray.map(formElement => (
                     <Input 
                         key={formElement.id}
+                        element={formElement}
                         elementType={formElement.config.elementType}
                         elementConfig={formElement.config.elementConfig}
+                        invalid={!formElement.config.valid}
                         value={formElement.config.value}
                         changed={(event) => this.inputChangeHandler(event, formElement.id)}/>
                 ))}
